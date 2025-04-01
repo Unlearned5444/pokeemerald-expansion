@@ -247,6 +247,8 @@ LittlerootTown_EventScript_SetRivalBirchPosForDexUpgradeFemale::
 	end
 
 LittlerootTown_EventScript_Pachisi::
+ lock
+ faceplayer
 	msgbox LittlerootTown_Text_Pachisi, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, LittlerootTown_EventScript_PachisiYes
 	goto_if_eq VAR_RESULT, NO, LittlerootTown_EventScript_PachisiNo
@@ -258,6 +260,7 @@ LittlerootTown_EventScript_PachisiYes::
 	end
 LittlerootTown_EventScript_PachisiNo::
 	msgbox LittlerootTown_Text_PachisiNo, MSGBOX_NPC
+ release
 	end
 	
 LittlerootTown_EventScript_FatMan::
