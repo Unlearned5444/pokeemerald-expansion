@@ -246,6 +246,10 @@ LittlerootTown_EventScript_SetRivalBirchPosForDexUpgradeFemale::
 	setobjectxy LOCALID_BIRCH, 14, 10
 	end
 
+LittlerootTown_EventScript_Pachisi::
+	special playPachisiMinigame
+	end
+	
 LittlerootTown_EventScript_FatMan::
 	msgbox LittlerootTown_Text_CanUsePCToStoreItems, MSGBOX_NPC
 	end
