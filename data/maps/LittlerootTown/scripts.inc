@@ -247,7 +247,17 @@ LittlerootTown_EventScript_SetRivalBirchPosForDexUpgradeFemale::
 	end
 
 LittlerootTown_EventScript_Pachisi::
+	msgbox LittlerootTown_Text_Pachisi, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, LittlerootTown_EventScript_PachisiYes
+	goto_if_eq VAR_RESULT, NO, LittlerootTown_EventScript_PachisiNo
+	end
+
+LittlerootTown_EventScript_PachisiYes::
+	msgbox LittlerootTown_Text_PachisiYes, MSGBOX_NPC
 	special playPachisiMinigame
+	end
+LittlerootTown_EventScript_PachisiNo::
+	msgbox LittlerootTown_Text_PachisiNo, MSGBOX_NPC
 	end
 	
 LittlerootTown_EventScript_FatMan::
@@ -942,6 +952,17 @@ LittlerootTown_Text_WearTheseRunningShoes:
 LittlerootTown_Text_SwitchShoesWithRunningShoes:
 	.string "{PLAYER} switched shoes with the\n"
 	.string "RUNNING SHOES.$"
+
+LittlerootTown_Text_Pachisi:
+	.string "{PLAYER}, are you ready to play a game\n"
+	.string "called Pachisi?.\p"
+	.string "It's all the rage in Europe.$"
+
+LittlerootTown_Text_PachisiYes:
+	.string "Okay, let's play.$"
+
+LittlerootTown_Text_PachisiNo:
+	.string "Okay, bye.$"
 
 LittlerootTown_Text_ExplainRunningShoes:
 	.string "MOM: {PLAYER}, those shoes came with\n"
