@@ -4,12 +4,15 @@
 // The following includes are only used for testing because we'll be making sure things are working by playing sounds.
 #include "constants/songs.h"
 #include "sound.h"
+#include "random.h"
+
 
 // Forward declarations:
 
 static void CB2_TransitionToPachisi();
 static void initPachisiVars();
 static void CB2_PollPachisi();
+static u8 rollDice();
 
 // Entry point from script:
 void playPachisiMinigame(void)
@@ -28,22 +31,59 @@ initPachisiVars();
 SetMainCallback2(CB2_PollPachisi);
 
 }
+
 static void initPachisiVars()
+
 {
-// diceRolls=25;
-// pos=0;
-// Or something to that effect.
+u8 pos = 0;
 }
+
+static u8 rollDice()
+{
+u8 randRoll = Random() % 6;
+randRoll += 1;
+return randRoll;
+}
+
+static void printOutcome(u8 rollResult)
+{
+	if (rollResult == 1) {
+		//Print 1
+		
+	}
+
+	if (rollResult == 2) {
+		
+	}
+
+	if (rollResult == 3) {
+		
+	}
+
+	if (rollResult == 4) {
+		
+	}
+
+	if (rollResult == 5) {
+		
+	}
+
+	if (rollResult == 6) {
+		
+	}
+}
+
+
 static void CB2_PollPachisi()
 {
 // This function will be called every frame.
 // For testing, we'll just play a noise when the A button or B button is pressed.
 //We'll show you how to stop by closing out Pachisi when start is pressed.
 
-	if (JOY_NEW(A_BUTTON))
-		PlaySE(SE_POKENAV_ON);
-	if (JOY_NEW(B_BUTTON))
-		PlaySE(SE_POKENAV_OFF);
+	if (JOY_NEW(A_BUTTON)) {
+
+
+	}
 	if (JOY_NEW(START_BUTTON))
 	{
 		PlaySE(SE_SHINY);
