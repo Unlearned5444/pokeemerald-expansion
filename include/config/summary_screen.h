@@ -2,8 +2,8 @@
 #define GUARD_CONFIG_SUMMARY_SCREEN_H
 
 // Settings
-#define P_SUMMARY_SCREEN_MOVE_RELEARNER  FALSE   // If TRUE, shows an option for Pokémon to relearn moves on the summary screen moves page.
-#define P_SUMMARY_MOVE_RELEARNER_FULL_PP FALSE   // If TRUE, the move relearner in the summary screen restores relearned moves' PP to full.
+#define P_SUMMARY_SCREEN_MOVE_RELEARNER  TRUE   // If TRUE, shows an option for Pokémon to relearn moves on the summary screen moves page.
+#define P_SUMMARY_MOVE_RELEARNER_FULL_PP TRUE   // If TRUE, the move relearner in the summary screen restores relearned moves' PP to full.
 #define P_SUMMARY_SCREEN_RENAME          TRUE   // If TRUE, an option to change Pokémon nicknames replaces the cancel prompt on the summary screen info page.
 #define P_SUMMARY_SCREEN_IV_EV_INFO      TRUE  // If TRUE, will allow player to cycle through the Stats, IVs, and EVs in the summary screen skills page.
 #define P_SUMMARY_SCREEN_IV_EV_BOX_ONLY  FALSE  // If TRUE, will allow player to cycle through the Stats, IVs, and EVs in the summary screen skills page, but only in the PC storage box.
