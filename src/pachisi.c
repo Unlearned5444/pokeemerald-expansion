@@ -1,11 +1,77 @@
 #include "global.h"
 #include "main.h"
 #include "overworld.h"
+#include "constants/songs.h"
 #include "random.h"
+#include "sound.h"
 #include "window.h"
 #include "field_message_box.h"
+#include "task.h"
+#include "text.h"
+
+
+static EWRAM_DATA const u8* gPachisiCurrentText=NULL;
+void task_PachisiMessageBox(u8 taskId);// Forward declare.
+
+
+const u8 Text_roll1[] = _("You rolled a 1.");
+const u8 Text_roll2[] = _("You rolled a 2.");
+const u8 Text_roll3[] = _("You rolled a 3.");
+const u8 Text_roll4[] = _("You rolled a 4.");
+const u8 Text_roll5[] = _("You rolled a 5.");
+const u8 Text_roll6[] = _("You rolled a 6.");
+
+
+void pachici_MessageBox(const u8* str)
+{
+	u8 taskId=CreateTask(task_PachisiMessageBox, 8); /* Second param is priority. Idk. I just set it to a number I've seen used. */
+	gTasks[taskId].data[0]=0;
+	gPachisiCurrentText=str;
+
+
+}
+void task_PachisiMessageBox(u8 taskId)
+{
+	// Get the state:
+	s16* state=&gTasks[taskId].data[0];
+	if(*state==0)
+	{
+		//InitFieldMessageBox();// Try uncommenting this line as your first troubleshooting step.
+
+
+		//ShowFieldMessage(gPachisiCurrentText);
+		gTextFlags.autoScroll = TRUE;
+		ShowFieldAutoScrollMessage(gPachisiCurrentText);
+
+
+		(*state)++;
+
+
+	}
+	if(*state==1)
+	{
+		// We're done only when the printer finishes.
+		if(GetFieldMessageBoxMode()==FIELD_MESSAGE_BOX_HIDDEN)
+		{
+			// Set the global string to null, that'll be how we can tell that we can continue pachisi for now.
+			gPachisiCurrentText=NULL;
+			// Destroy our task. We can eventually switch the task's existance as being how we can tell if we're done, this way's just easier.
+			DestroyTask(taskId);
+		}
+	}
+}
+
+
+u8 pachisiMessageBoxActive()
+{
+	return (gPachisiCurrentText!=0);
+
+
+}
+
 
 // Forward declarations:
+
 
 static void CB2_TransitionToPachisi();
 static void initPachisiVars();
@@ -13,11 +79,14 @@ static void CB2_PollPachisi();
 static u8 rollDice();
 static void printOutcome(u8 rollResult);
 
+
 // Entry point from script:
 void playPachisiMinigame(void)
 {
 	SetMainCallback2(CB2_TransitionToPachisi);
 }
+
+
 
 
 static void CB2_TransitionToPachisi()
@@ -27,19 +96,19 @@ static void CB2_TransitionToPachisi()
 initPachisiVars();
 SetMainCallback2(CB2_PollPachisi);
 
+
 }
+
 
 static void initPachisiVars()
 
+
 {
 // u8 pos = 0;
-const u8 Text_roll1[] = _("You rolled a 1.{PAUSE_UNTIL_PRESS}");
-const u8 Text_roll2[] = _("You rolled a 2.{PAUSE_UNTIL_PRESS}");
-const u8 Text_roll3[] = _("You rolled a 3.{PAUSE_UNTIL_PRESS}");
-const u8 Text_roll4[] = _("You rolled a 4.{PAUSE_UNTIL_PRESS}");
-const u8 Text_roll5[] = _("You rolled a 5.{PAUSE_UNTIL_PRESS}");
-const u8 Text_roll6[] = _("You rolled a 6.{PAUSE_UNTIL_PRESS}");
+PlayBGM(MUS_CONTEST);
+
 }
+
 
 static u8 rollDice()
 {
@@ -48,47 +117,59 @@ randRoll += 1;
 return randRoll;
 }
 
+
 static void printOutcome(u8 rollResult)
 {
-	void InitFieldMessageBox(void);
+	
+	// void InitFieldMessageBox(void);
+
 
 	if (rollResult == 1) {
-		ShowFieldAutoScrollMessage(Text_roll1);	
+		pachici_MessageBox(Text_roll1);
 	}
+
 
 	if (rollResult == 2) {
-		ShowFieldAutoScrollMessage(Text_roll2);	
-
+		pachici_MessageBox(Text_roll2);
 	}
+
 
 	if (rollResult == 3) {
-		ShowFieldAutoScrollMessage(Text_roll3);	
-
+		pachici_MessageBox(Text_roll3);
 	}
+
 
 	if (rollResult == 4) {
-		ShowFieldAutoScrollMessage(Text_roll4);	
+		pachici_MessageBox(Text_roll4);
 	}
+
 
 	if (rollResult == 5) {
-		ShowFieldAutoScrollMessage(Text_roll5);	
+		pachici_MessageBox(Text_roll5);
 	}
 
+
 	if (rollResult == 6) {
-		ShowFieldAutoScrollMessage(Text_roll6);
+		pachici_MessageBox(Text_roll6);
 	}
 }
 
 
+
+
 static void CB2_PollPachisi()
 {
-
-
+	RunTasks();
+	if(pachisiMessageBoxActive())
+	return;
+	
 	if (JOY_NEW(A_BUTTON)) {
+		PlaySE(SE_SELECT);
 		printOutcome(rollDice());
-			}
+				}
 	if (JOY_NEW(START_BUTTON))
 	{
+		PlaySE(SE_M_SELF_DESTRUCT);
 		SetMainCallback2(CB2_ReturnToFieldContinueScript);
 	}
 }
