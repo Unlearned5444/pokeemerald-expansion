@@ -1,0 +1,23 @@
+#ifndef PACHISI_DEFINES_H
+#define PACHISI_DEFINES_H
+
+#define SQUARE_NONE 0
+#define SQUARE_WILD_LAND 1
+#define SQUARE_WILD_CAVE 2
+#define SQUARE_WILD_WATER 3
+#define SQUARE_HEAL 4
+#define SQUARE_MONEY 5
+#define SQUARE_MUNCHER 6
+#define SQUARE_MOVE_FORWARD 7
+#define SQUARE_MOVE_BACKWARD 8
+#define SQUARE_DEATH 9
+#define SQUARE_ITEM 10
+#define NUM_NORMAL_SQUARES 11
+// special squares
+#define SQUARE_WARPTO 11
+
+#define SQUARE_RANDOM 255
+
+
+
+#endif

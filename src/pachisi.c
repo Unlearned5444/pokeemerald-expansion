@@ -8,8 +8,14 @@
 #include "field_message_box.h"
 #include "task.h"
 #include "text.h"
-
-
+#include "string_util.h"
+#include "pachisi_data/pachisi_defines.h"
+#include "pachisi_data/PachisiSquare.h"
+#include "pachisi_data/death.h" // death.h was my level output from the editor.
+ 
+EWRAM_DATA u16 pos;
+EWRAM_DATA u8 lastRoll;
+const EWRAM_DATA struct PachisiSquare* currentBoard=NULL;
 static EWRAM_DATA const u8* gPachisiCurrentText=NULL;
 void task_PachisiMessageBox(u8 taskId);// Forward declare.
 
@@ -20,6 +26,7 @@ const u8 Text_roll3[] = _("You rolled a 3.");
 const u8 Text_roll4[] = _("You rolled a 4.");
 const u8 Text_roll5[] = _("You rolled a 5.");
 const u8 Text_roll6[] = _("You rolled a 6.");
+const u8 text_current_pos[] = _("Pos is {STR_VAR_1}");
 
 
 void pachici_MessageBox(const u8* str)
@@ -104,7 +111,8 @@ static void initPachisiVars()
 
 
 {
-// u8 pos = 0;
+pos = 0;
+lastRoll = 0;
 PlayBGM(MUS_CONTEST);
 
 }
@@ -162,10 +170,20 @@ static void CB2_PollPachisi()
 	RunTasks();
 	if(pachisiMessageBoxActive())
 	return;
+
+	if (lastRoll > 0) {
+		ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
+		StringExpandPlaceholders(gStringVar4, text_current_pos);
+		pachici_MessageBox(gStringVar4);	
+		lastRoll = 0;
+	}
 	
+
 	if (JOY_NEW(A_BUTTON)) {
 		PlaySE(SE_SELECT);
-		printOutcome(rollDice());
+		lastRoll = rollDice();
+		printOutcome(lastRoll);
+		pos += lastRoll;
 				}
 	if (JOY_NEW(START_BUTTON))
 	{
