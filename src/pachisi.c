@@ -53,29 +53,29 @@ static void printOutcome(u8 rollResult)
 	void InitFieldMessageBox(void);
 
 	if (rollResult == 1) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll1);	
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll1);	
 	}
 
 	if (rollResult == 2) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll2);	
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll2);	
 
 	}
 
 	if (rollResult == 3) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll3);	
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll3);	
 
 	}
 
 	if (rollResult == 4) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll4);	
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll4);	
 	}
 
 	if (rollResult == 5) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll5);	
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll5);	
 	}
 
 	if (rollResult == 6) {
-		bool8 ShowFieldAutoScrollMessage(const u8 *Text_roll6);
+		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll6);
 	}
 }
 
@@ -85,11 +85,10 @@ static void CB2_PollPachisi()
 
 
 	if (JOY_NEW(A_BUTTON)) {
-		printOutcome(u8 rollDice());
+		printOutcome(rollDice());
 			}
 	if (JOY_NEW(START_BUTTON))
 	{
-		PlaySE(SE_SHINY);
-	SetMainCallback2(CB2_ReturnToFieldContinueScript);
+		SetMainCallback2(CB2_ReturnToFieldContinueScript);
 	}
 }
