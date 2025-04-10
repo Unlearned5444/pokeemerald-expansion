@@ -32,7 +32,7 @@ SetMainCallback2(CB2_PollPachisi);
 static void initPachisiVars()
 
 {
-u8 pos = 0;
+// u8 pos = 0;
 const u8 Text_roll1[] = _("You rolled a 1.{PAUSE_UNTIL_PRESS}");
 const u8 Text_roll2[] = _("You rolled a 2.{PAUSE_UNTIL_PRESS}");
 const u8 Text_roll3[] = _("You rolled a 3.{PAUSE_UNTIL_PRESS}");
@@ -53,29 +53,29 @@ static void printOutcome(u8 rollResult)
 	void InitFieldMessageBox(void);
 
 	if (rollResult == 1) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll1);	
+		ShowFieldAutoScrollMessage(Text_roll1);	
 	}
 
 	if (rollResult == 2) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll2);	
+		ShowFieldAutoScrollMessage(Text_roll2);	
 
 	}
 
 	if (rollResult == 3) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll3);	
+		ShowFieldAutoScrollMessage(Text_roll3);	
 
 	}
 
 	if (rollResult == 4) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll4);	
+		ShowFieldAutoScrollMessage(Text_roll4);	
 	}
 
 	if (rollResult == 5) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll5);	
+		ShowFieldAutoScrollMessage(Text_roll5);	
 	}
 
 	if (rollResult == 6) {
-		bool8 ShowFieldAutoScrollMessage(const u8 Text_roll6);
+		ShowFieldAutoScrollMessage(Text_roll6);
 	}
 }
 
