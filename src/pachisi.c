@@ -1,3 +1,5 @@
+// Pachisi Minigame - Organized and Improved Comments
+
 #include "global.h"
 #include "main.h"
 #include "overworld.h"
@@ -11,14 +13,18 @@
 #include "string_util.h"
 #include "pachisi_data/pachisi_defines.h"
 #include "pachisi_data/PachisiSquare.h"
- 
+
+//=============================================================================
+// Global Variables
+//=============================================================================
 EWRAM_DATA u16 pos;
 EWRAM_DATA u8 lastRoll;
-const EWRAM_DATA struct PachisiSquare* currentBoard=NULL;
-static EWRAM_DATA const u8* gPachisiCurrentText=NULL;
-void task_PachisiMessageBox(u8 taskId);// Forward declare.
+const EWRAM_DATA struct PachisiSquare* currentBoard = NULL;
+static EWRAM_DATA const u8* gPachisiCurrentText = NULL;
 
-
+//=============================================================================
+// Text Constants for Pachisi Messages
+//=============================================================================
 const u8 Text_roll1[] = _("You rolled a 1.");
 const u8 Text_roll2[] = _("You rolled a 2.");
 const u8 Text_roll3[] = _("You rolled a 3.");
@@ -27,167 +33,139 @@ const u8 Text_roll5[] = _("You rolled a 5.");
 const u8 Text_roll6[] = _("You rolled a 6.");
 const u8 text_current_pos[] = _("Pos is {STR_VAR_1}");
 
+//=============================================================================
+// Forward Declarations
+//=============================================================================
 
-void pachici_MessageBox(const u8* str)
+// Task to handle the Pachisi message box state machine.
+void task_PachisiMessageBox(u8 taskId);
+
+//=============================================================================
+// Message Box Functions
+//=============================================================================
+
+// Creates and initializes a task to display a Pachisi message.
+void pachisi_MessageBox(const u8* str)
 {
-	u8 taskId=CreateTask(task_PachisiMessageBox, 8); /* Second param is priority. Idk. I just set it to a number I've seen used. */
-	gTasks[taskId].data[0]=0;
-	gPachisiCurrentText=str;
-
-
+    u8 taskId = CreateTask(task_PachisiMessageBox, 8);  // Priority set to 8
+    gTasks[taskId].data[0] = 0;
+    gPachisiCurrentText = str;
 }
+
+// Task function to process the Pachisi message box.
 void task_PachisiMessageBox(u8 taskId)
 {
-	// Get the state:
-	s16* state=&gTasks[taskId].data[0];
-	if(*state==0)
-	{
-		//InitFieldMessageBox();// Try uncommenting this line as your first troubleshooting step.
+    s16* state = &gTasks[taskId].data[0];
 
-
-		//ShowFieldMessage(gPachisiCurrentText);
-		gTextFlags.autoScroll = TRUE;
-		ShowFieldAutoScrollMessage(gPachisiCurrentText);
-
-
-		(*state)++;
-
-
-	}
-	if(*state==1)
-	{
-		// We're done only when the printer finishes.
-		if(GetFieldMessageBoxMode()==FIELD_MESSAGE_BOX_HIDDEN)
-		{
-			// Set the global string to null, that'll be how we can tell that we can continue pachisi for now.
-			gPachisiCurrentText=NULL;
-			// Destroy our task. We can eventually switch the task's existance as being how we can tell if we're done, this way's just easier.
-			DestroyTask(taskId);
-		}
-	}
+    if (*state == 0)
+    {
+        // Initialize message box and start auto-scroll.
+        // Uncomment InitFieldMessageBox() if initialization is needed.
+        // InitFieldMessageBox();
+        // ShowFieldMessage(gPachisiCurrentText);
+        gTextFlags.autoScroll = TRUE;
+        ShowFieldAutoScrollMessage(gPachisiCurrentText);
+        (*state)++;
+    }
+    else if (*state == 1)
+    {
+        // Proceed when the message box has finished.
+        if (GetFieldMessageBoxMode() == FIELD_MESSAGE_BOX_HIDDEN)
+        {
+            gPachisiCurrentText = NULL; // Mark as inactive.
+            DestroyTask(taskId);
+        }
+    }
 }
 
-
+// Returns true if a Pachisi message box is currently active.
 u8 pachisiMessageBoxActive()
 {
-	return (gPachisiCurrentText!=0);
-
-
+    return (gPachisiCurrentText != 0);
 }
 
+//=============================================================================
+// Minigame Callbacks and Utility Functions
+//=============================================================================
 
-// Forward declarations:
+// Forward declarations for static functions.
+static void CB2_TransitionToPachisi();   // Sets up the minigame transition.
+static void initPachisiVars();           // Initializes minigame variables.
+static void CB2_PollPachisi();            // Main loop for processing game tasks.
+static u8 rollDice();                   // Simulates a dice roll (1-6).
+static void printOutcome(u8 rollResult); // Displays message based on dice roll.
 
-
-static void CB2_TransitionToPachisi();
-static void initPachisiVars();
-static void CB2_PollPachisi();
-static u8 rollDice();
-static void printOutcome(u8 rollResult);
-
-
-// Entry point from script:
+// Entry point for starting the Pachisi minigame.
 void playPachisiMinigame(void)
 {
-	SetMainCallback2(CB2_TransitionToPachisi);
+    SetMainCallback2(CB2_TransitionToPachisi);
 }
 
-
-
-
+// Transition callback: prepares the minigame.
 static void CB2_TransitionToPachisi()
 {
-	// You could go straight to Pachisi. But a lot of Pokemon routines have some preliminary step,
-	// usually for graphics updates I think. So I'm just including this here, and we can at least do our var initialization here if we want, like dice rolls / pos etc.
-initPachisiVars();
-SetMainCallback2(CB2_PollPachisi);
-
-
+    // Initialize variables and transition to the main polling loop.
+    initPachisiVars();
+    SetMainCallback2(CB2_PollPachisi);
 }
 
-
+// Initializes Pachisi game variables and starts its background music.
 static void initPachisiVars()
-
-
 {
-pos = 0;
-lastRoll = 0;
-PlayBGM(MUS_PACHISI);
-
+    pos = 0;
+    lastRoll = 0;
+    PlayBGM(MUS_PACHISI);
 }
 
-
+// Simulates a dice roll by returning a random number between 1 and 6.
 static u8 rollDice()
 {
-u8 randRoll = Random() % 6;
-randRoll += 1;
-return randRoll;
+    u8 randRoll = Random() % 6;
+    return randRoll + 1;
 }
 
-
+// Displays the outcome message for the given dice roll.
 static void printOutcome(u8 rollResult)
 {
-	
-	// void InitFieldMessageBox(void);
-
-
-	if (rollResult == 1) {
-		pachici_MessageBox(Text_roll1);
-	}
-
-
-	if (rollResult == 2) {
-		pachici_MessageBox(Text_roll2);
-	}
-
-
-	if (rollResult == 3) {
-		pachici_MessageBox(Text_roll3);
-	}
-
-
-	if (rollResult == 4) {
-		pachici_MessageBox(Text_roll4);
-	}
-
-
-	if (rollResult == 5) {
-		pachici_MessageBox(Text_roll5);
-	}
-
-
-	if (rollResult == 6) {
-		pachici_MessageBox(Text_roll6);
-	}
+    if (rollResult == 1)  pachisi_MessageBox(Text_roll1);
+    else if (rollResult == 2)  pachisi_MessageBox(Text_roll2);
+    else if (rollResult == 3)  pachisi_MessageBox(Text_roll3);
+    else if (rollResult == 4)  pachisi_MessageBox(Text_roll4);
+    else if (rollResult == 5)  pachisi_MessageBox(Text_roll5);
+    else if (rollResult == 6)  pachisi_MessageBox(Text_roll6);
 }
 
-
-
-
+// Main loop callback for processing Pachisi minigame tasks and inputs.
 static void CB2_PollPachisi()
 {
-	RunTasks();
-	if(pachisiMessageBoxActive())
-	return;
+    RunTasks();
 
-	if (lastRoll > 0) {
-		ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
-		StringExpandPlaceholders(gStringVar4, text_current_pos);
-		pachici_MessageBox(gStringVar4);	
-		lastRoll = 0;
-	}
-	
+    // If a message is still showing, halt input processing.
+    if (pachisiMessageBoxActive())
+        return;
 
-	if (JOY_NEW(A_BUTTON)) {
-		PlaySE(SE_SELECT);
-		lastRoll = rollDice();
-		printOutcome(lastRoll);
-		pos += lastRoll;
-				}
-	if (JOY_NEW(START_BUTTON))
-	{
-		PlaySE(SE_M_SELF_DESTRUCT);
-		PlayBGM(MUS_LITTLEROOT);
-		SetMainCallback2(CB2_ReturnToFieldContinueScript);
-	}
+    // Display the current position if a roll was made.
+    if (lastRoll > 0)
+    {
+        ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
+        StringExpandPlaceholders(gStringVar4, text_current_pos);
+        pachisi_MessageBox(gStringVar4);
+        lastRoll = 0;
+    }
+
+    // Process input: Roll dice on A_BUTTON.
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        lastRoll = rollDice();
+        printOutcome(lastRoll);
+        pos += lastRoll;
+    }
+    // Process input: Exit minigame on START_BUTTON.
+    else if (JOY_NEW(START_BUTTON))
+    {
+        PlaySE(SE_M_SELF_DESTRUCT);
+        PlayBGM(MUS_LITTLEROOT);
+        SetMainCallback2(CB2_ReturnToFieldContinueScript);
+    }
 }
