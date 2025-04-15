@@ -1,4 +1,4 @@
-// Pachisi Minigame - Organized and Improved Comments
+// Pachisi Minigame
 
 #include "global.h"
 #include "main.h"
@@ -31,7 +31,7 @@ const u8 Text_roll3[] = _("You rolled a 3.");
 const u8 Text_roll4[] = _("You rolled a 4.");
 const u8 Text_roll5[] = _("You rolled a 5.");
 const u8 Text_roll6[] = _("You rolled a 6.");
-const u8 text_current_pos[] = _("Pos is {STR_VAR_1}");
+const u8 text_current_pos[] = _("You are now on tile {STR_VAR_1}.");
 
 //=============================================================================
 // Forward Declarations
@@ -39,6 +39,11 @@ const u8 text_current_pos[] = _("Pos is {STR_VAR_1}");
 
 // Task to handle the Pachisi message box state machine.
 void task_PachisiMessageBox(u8 taskId);
+
+// Forward declaration for square-specific functions.
+static void launchBattle(void);
+static void giveMoney(void);
+static void triggerDeath(void);
 
 //=============================================================================
 // Message Box Functions
@@ -92,7 +97,7 @@ u8 pachisiMessageBoxActive()
 static void CB2_TransitionToPachisi();   // Sets up the minigame transition.
 static void initPachisiVars();           // Initializes minigame variables.
 static void CB2_PollPachisi();            // Main loop for processing game tasks.
-static u8 rollDice();                   // Simulates a dice roll (1-6).
+static u8 rollDice();                    // Simulates a dice roll (1-6).
 static void printOutcome(u8 rollResult); // Displays message based on dice roll.
 
 // Entry point for starting the Pachisi minigame.
@@ -135,6 +140,55 @@ static void printOutcome(u8 rollResult)
     else if (rollResult == 6)  pachisi_MessageBox(Text_roll6);
 }
 
+// Function to check the square type and execute corresponding tasks.
+static void checkSquare()
+{
+    if (currentBoard == NULL)
+        return;
+
+    const struct PachisiSquare* square = &currentBoard[pos];
+    switch (square->square)
+    {
+        case SQUARE_WILD_LAND:
+            launchBattle();
+            break;
+        case SQUARE_WILD_CAVE:
+            launchBattle();
+            break;
+        case SQUARE_WILD_WATER:
+            launchBattle();
+            break;
+        case SQUARE_MONEY:
+            giveMoney();
+            break;
+        case SQUARE_DEATH:
+            triggerDeath();
+            break;
+        default:
+            break;
+    }
+}
+
+// Stub functions for square-specific tasks.
+static void launchBattle(void)
+{
+    // Placeholder for battle.
+}
+
+static void giveMoney(void)
+{
+    // Placeholder for giving money.
+}
+
+static void triggerDeath(void)
+{
+    PlaySE(SE_THUNDER);
+    PlaySE(SE_THUNDER2);
+    PlayBGM(MUS_LITTLEROOT);
+    SetMainCallback2(CB2_ReturnToFieldContinueScript);
+
+}
+
 // Main loop callback for processing Pachisi minigame tasks and inputs.
 static void CB2_PollPachisi()
 {
@@ -150,6 +204,7 @@ static void CB2_PollPachisi()
         ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
         StringExpandPlaceholders(gStringVar4, text_current_pos);
         pachisi_MessageBox(gStringVar4);
+        checkSquare();
         lastRoll = 0;
     }
 

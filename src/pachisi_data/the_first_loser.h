@@ -51,3 +51,5 @@ static struct PachisiSquare PachisiLevel_the_first_loser[] =
     { .square = SQUARE_DEATH, .data = { 0, 0, 0 } },
     { .square = SQUARE_DEATH, .data = { 0, 0, 0 } },
 };
+
+currentBoard = PachisiLevel_the_first_loser;
