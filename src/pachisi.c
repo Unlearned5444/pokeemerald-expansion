@@ -11,7 +11,6 @@
 #include "string_util.h"
 #include "pachisi_data/pachisi_defines.h"
 #include "pachisi_data/PachisiSquare.h"
-#include "pachisi_data/death.h" // death.h was my level output from the editor.
  
 EWRAM_DATA u16 pos;
 EWRAM_DATA u8 lastRoll;
@@ -113,7 +112,7 @@ static void initPachisiVars()
 {
 pos = 0;
 lastRoll = 0;
-PlayBGM(MUS_CONTEST);
+PlayBGM(MUS_PACHISI);
 
 }
 
@@ -188,6 +187,7 @@ static void CB2_PollPachisi()
 	if (JOY_NEW(START_BUTTON))
 	{
 		PlaySE(SE_M_SELF_DESTRUCT);
+		PlayBGM(MUS_LITTLEROOT);
 		SetMainCallback2(CB2_ReturnToFieldContinueScript);
 	}
 }
