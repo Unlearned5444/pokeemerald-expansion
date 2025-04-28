@@ -13,13 +13,14 @@
 #include "string_util.h"
 #include "pachisi_data/pachisi_defines.h"
 #include "pachisi_data/PachisiSquare.h"
+#include "pachisi_data/the_first_loser.h"
+#define SQUARE_COUNT (sizeof(PachisiLevel_the_first_loser) / sizeof(PachisiLevel_the_first_loser[0]))
 
 //=============================================================================
 // Global Variables
 //=============================================================================
 EWRAM_DATA u16 pos;
 EWRAM_DATA u8 lastRoll;
-const EWRAM_DATA struct PachisiSquare* currentBoard = NULL;
 static EWRAM_DATA const u8* gPachisiCurrentText = NULL;
 
 //=============================================================================
@@ -32,6 +33,8 @@ const u8 Text_roll4[] = _("You rolled a 4.");
 const u8 Text_roll5[] = _("You rolled a 5.");
 const u8 Text_roll6[] = _("You rolled a 6.");
 const u8 text_current_pos[] = _("You are now on tile {STR_VAR_1}.");
+const u8 text_end[] = _("You have reached the end of the board.");
+
 
 //=============================================================================
 // Forward Declarations
@@ -140,34 +143,6 @@ static void printOutcome(u8 rollResult)
     else if (rollResult == 6)  pachisi_MessageBox(Text_roll6);
 }
 
-// Function to check the square type and execute corresponding tasks.
-static void checkSquare()
-{
-    if (currentBoard == NULL)
-        return;
-
-    const struct PachisiSquare* square = &currentBoard[pos];
-    switch (square->square)
-    {
-        case SQUARE_WILD_LAND:
-            launchBattle();
-            break;
-        case SQUARE_WILD_CAVE:
-            launchBattle();
-            break;
-        case SQUARE_WILD_WATER:
-            launchBattle();
-            break;
-        case SQUARE_MONEY:
-            giveMoney();
-            break;
-        case SQUARE_DEATH:
-            triggerDeath();
-            break;
-        default:
-            break;
-    }
-}
 
 // Stub functions for square-specific tasks.
 static void launchBattle(void)
@@ -201,10 +176,23 @@ static void CB2_PollPachisi()
     // Display the current position if a roll was made.
     if (lastRoll > 0)
     {
+        if (pos >= SQUARE_COUNT)
+        {
+            pachisi_MessageBox(text_end);
+            SetMainCallback2(CB2_ReturnToFieldContinueScript);
+        }
+        else
+        {
+            ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
+            StringExpandPlaceholders(gStringVar4, text_current_pos);
+            pachisi_MessageBox(gStringVar4);
+            lastRoll = 0;
+        }
+    }
+    {
         ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
         StringExpandPlaceholders(gStringVar4, text_current_pos);
         pachisi_MessageBox(gStringVar4);
-        checkSquare();
         lastRoll = 0;
     }
 
