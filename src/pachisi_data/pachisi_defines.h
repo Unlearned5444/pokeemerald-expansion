@@ -19,5 +19,6 @@
 #define SQUARE_RANDOM 255
 
 
+#define PACHISI_LEVEL_THE_FIRST_LOSER 0
 
 #endif

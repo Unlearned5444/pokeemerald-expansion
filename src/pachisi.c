@@ -13,8 +13,9 @@
 #include "string_util.h"
 #include "pachisi_data/pachisi_defines.h"
 #include "pachisi_data/PachisiSquare.h"
-#include "pachisi_data/the_first_loser.h"
-#define SQUARE_COUNT (sizeof(PachisiLevel_the_first_loser) / sizeof(PachisiLevel_the_first_loser[0]))
+#include "pachisi_data/pachisi_levels.h"
+
+
 
 //=============================================================================
 // Global Variables
@@ -123,6 +124,41 @@ static void initPachisiVars()
     pos = 0;
     lastRoll = 0;
     PlayBGM(MUS_PACHISI);
+/* Examples of how to access pachisi information. This is showing you how it is done, this is not exactly how you should do it. I'm only trying to show you the interface. */
+
+/* Get level: */
+const PachisiSquare* level=pachisi_levels[PACHISI_LEVEL_THE_FIRST_LOSER].level;
+/* And size. */
+size_t levelSize=pachisi_levels[PACHISI_LEVEL_THE_FIRST_LOSER].size;
+/* Get the type of the last square. */
+int square=level[levelSize-1].square;
+/* Get the first data field of the third. */
+int levelData0=level[2].data[0];
+
+/* Let's confirm that the levelSize is 50. It should be as of this writing, if the generator is doing its job correctly. */
+u8 valid=1;
+if(levelSize!=50)
+valid=0;
+/* Let's confirm that the last square is a death square. It should be as of this writing, if the generator is doing its job correctly and our code is correctly accessing the data. */
+if(square!=SQUARE_DEATH)
+valid=0;
+if(valid)
+PlaySE(SE_EGG_HATCH);
+else
+PlaySE(SE_FAILURE);
+
+/*
+Protip / coding exercise:
+Write getters around the pachisi level data so you're never touching the structures directly.
+E.G. the above code could look like:
+int square=getPachisiSquare(levelId, levelSize-1);
+s16 square_data_0=getPachisiSquareData(levelId, 2, 0);
+where levelId = PACHISI_LEVEL_THE_FIRST_LOSER
+
+
+*/
+
+
 }
 
 // Simulates a dice roll by returning a random number between 1 and 6.
@@ -176,24 +212,20 @@ static void CB2_PollPachisi()
     // Display the current position if a roll was made.
     if (lastRoll > 0)
     {
-        if (pos >= SQUARE_COUNT)
-        {
-            pachisi_MessageBox(text_end);
-            SetMainCallback2(CB2_ReturnToFieldContinueScript);
-        }
-        else
+/* Todo: update this with the modern code. */
+
+//        if (pos >= SQUARE_COUNT)
+//        {
+//            pachisi_MessageBox(text_end);
+//            SetMainCallback2(CB2_ReturnToFieldContinueScript);
+//        }
+//        else
         {
             ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
             StringExpandPlaceholders(gStringVar4, text_current_pos);
             pachisi_MessageBox(gStringVar4);
             lastRoll = 0;
         }
-    }
-    {
-        ConvertIntToDecimalStringN(gStringVar1, pos, STR_CONV_MODE_LEFT_ALIGN, 5);
-        StringExpandPlaceholders(gStringVar4, text_current_pos);
-        pachisi_MessageBox(gStringVar4);
-        lastRoll = 0;
     }
 
     // Process input: Roll dice on A_BUTTON.
